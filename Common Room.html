@@ -1,0 +1,424 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Common Room</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one column, a campus search sentence up top, then a grid of student-ID style cards. */
+:root {
+  --bg: #F4F2F8;
+  --surface: #FFFFFF;
+  --ink: #1A1428;
+  --muted: #655E7A;
+  --line: #DDD8E8;
+  --accent: #D6246E;
+  --accent-ink: #FFFFFF;
+  --soft: #F0E9F4;
+  --good: #1C7C54;
+  --font-display: "Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+  --font-body: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "DM Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #130F1E; --surface: #1C1730; --ink: #F3EFFB; --muted: #A59DBD; --line: #302949;
+    --accent: #FF6AA2; --accent-ink: #1A0B14; --soft: #272040; --good: #5FD39C;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #130F1E; --surface: #1C1730; --ink: #F3EFFB; --muted: #A59DBD; --line: #302949;
+  --accent: #FF6AA2; --accent-ink: #1A0B14; --soft: #272040; --good: #5FD39C;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: var(--font-body); font-size: 16px; line-height: 1.5;
+  padding-block: 20px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 980px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
+h1, h2, h3 { font-family: var(--font-display); margin: 0; text-wrap: balance; letter-spacing: -0.02em; }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.mono { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+
+/* header */
+header { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.brand { font-family: var(--font-display); font-weight: 800; font-size: 26px; letter-spacing: -0.03em; display: flex; align-items: center; gap: 10px; }
+.brand i { width: 22px; height: 22px; border-radius: 50% 50% 50% 4px; background: var(--accent); display: inline-block; transform: rotate(-45deg); }
+nav { display: flex; gap: 4px; background: var(--soft); padding: 4px; border-radius: 999px; }
+nav button { border: 0; background: transparent; padding: 8px 16px; border-radius: 999px; cursor: pointer; font-weight: 600; color: var(--muted); }
+nav button[aria-selected="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(20,10,40,.15); }
+nav .count { font-family: var(--font-mono); font-size: 12px; margin-left: 4px; color: var(--accent); }
+
+/* hero search */
+.hero { display: flex; flex-direction: column; gap: 18px; }
+.hero h1 { font-size: clamp(34px, 7vw, 64px); line-height: 1.02; font-weight: 800; max-width: 14ch; }
+.hero h1 em { font-style: normal; color: var(--accent); }
+.finder { display: flex; flex-wrap: wrap; align-items: end; gap: 12px 16px; }
+.finder label.big { flex: 1 1 320px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.finder input.big {
+  width: 100%; font-family: var(--font-display); font-weight: 700; font-size: clamp(22px, 4vw, 32px);
+  background: transparent; border: 0; border-bottom: 3px solid var(--ink); padding: 6px 0; border-radius: 0;
+}
+.finder input.big::placeholder { color: var(--muted); opacity: .7; }
+.filters { display: flex; gap: 10px; flex-wrap: wrap; }
+.filters select, .field input, .field select, .field textarea {
+  background: var(--surface); border: 1.5px solid var(--line); border-radius: 10px; padding: 10px 12px; min-width: 0;
+}
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { border: 1.5px solid var(--line); background: var(--surface); border-radius: 999px; padding: 6px 12px; cursor: pointer; font-size: 14px; }
+.chip b { font-family: var(--font-mono); font-weight: 500; color: var(--accent); margin-left: 6px; }
+.chip:hover { border-color: var(--accent); }
+.tag { background: var(--soft); border-radius: 6px; padding: 3px 8px; font-size: 13px; }
+
+/* notices */
+.notice { border: 1.5px dashed var(--line); border-radius: 14px; padding: 14px 16px; color: var(--muted); }
+.notice strong { color: var(--ink); }
+.empty { padding: 36px 20px; text-align: center; border: 1.5px dashed var(--line); border-radius: 16px; display: flex; flex-direction: column; gap: 10px; align-items: center; }
+.empty h3 { font-size: 22px; }
+.empty p { margin: 0; color: var(--muted); max-width: 46ch; }
+
+/* ID cards */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; }
+.id { background: var(--surface); border: 1.5px solid var(--line); border-radius: 18px; overflow: hidden; display: flex; flex-direction: column; min-width: 0; }
+.id .stripe { background: var(--accent); color: var(--accent-ink); padding: 12px 16px; display: flex; justify-content: space-between; gap: 10px; align-items: center; position: relative; }
+.id .stripe span { min-width: 0; overflow-wrap: anywhere; }
+.id .hole { width: 34px; height: 8px; border-radius: 99px; background: var(--bg); flex: none; }
+.id .body { padding: 16px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+.id h3 { font-size: 24px; line-height: 1.1; overflow-wrap: anywhere; }
+.id .sub { color: var(--muted); font-size: 14px; }
+.id p.bio { margin: 0; overflow-wrap: anywhere; }
+.id .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.id .handle { font-family: var(--font-mono); font-size: 13px; overflow-wrap: anywhere; }
+.id .foot { display: flex; gap: 8px; align-items: center; padding: 12px 16px; border-top: 1.5px dashed var(--line); flex-wrap: wrap; }
+.id .foot .grow { flex: 1; }
+.btn { border: 1.5px solid var(--ink); background: transparent; border-radius: 999px; padding: 9px 18px; font-weight: 600; cursor: pointer; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn.solid { background: var(--ink); color: var(--bg); }
+.btn.ghost { border-color: transparent; color: var(--muted); padding-inline: 10px; font-weight: 500; font-size: 14px; }
+.btn[disabled] { opacity: .5; cursor: not-allowed; }
+.badge-match { color: var(--good); font-weight: 700; font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
+
+/* form */
+form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; max-width: 760px; }
+.field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.field.full, .full { grid-column: 1 / -1; }
+.field label, .field .lab { font-weight: 600; font-size: 14px; }
+.field small { color: var(--muted); }
+.check { display: flex; gap: 10px; align-items: flex-start; }
+.check input { margin-top: 4px; width: 18px; height: 18px; accent-color: var(--accent); }
+.status { min-height: 1.4em; font-weight: 600; }
+.status.err { color: var(--accent); }
+.actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+@media (max-width: 560px) { form { grid-template-columns: 1fr; } nav button { padding: 8px 12px; } }
+@media (prefers-reduced-motion: no-preference) { .id { transition: transform .15s ease; } .id:hover { transform: translateY(-2px); } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="brand"><i aria-hidden="true"></i>Common Room</div>
+    <nav role="tablist" aria-label="Sections">
+      <button role="tab" id="tab-browse" aria-selected="true" data-view="browse">Find people</button>
+      <button role="tab" id="tab-matches" aria-selected="false" data-view="matches">Matches<span class="count" id="matchCount"></span></button>
+      <button role="tab" id="tab-me" aria-selected="false" data-view="me">My card</button>
+    </nav>
+  </header>
+
+  <div id="banner"></div>
+
+  <section id="view-browse" class="hero" aria-labelledby="tab-browse">
+    <h1>Meet people from <em>your campus.</em></h1>
+    <div class="finder">
+      <label class="big"><span class="mono">Find people at</span>
+        <input class="big" id="college" type="search" autocomplete="off" placeholder="Type your college name" spellcheck="false">
+      </label>
+      <div class="filters">
+        <select id="fYear" aria-label="Year"><option value="">Any year</option><option>1st year</option><option>2nd year</option><option>3rd year</option><option>4th year</option><option>5th year+</option><option>Postgrad</option></select>
+        <select id="fGender" aria-label="Show me"><option value="">Show everyone</option><option>Women</option><option>Men</option><option>Non-binary</option></select>
+      </div>
+    </div>
+    <div id="campuses" class="chips" aria-label="Campuses on Common Room"></div>
+    <div id="results"></div>
+  </section>
+
+  <section id="view-matches" hidden aria-labelledby="tab-matches">
+    <div id="matches"></div>
+  </section>
+
+  <section id="view-me" hidden aria-labelledby="tab-me" style="display:flex;flex-direction:column;gap:20px">
+    <h2 id="meTitle" style="font-size:34px">Make your card</h2>
+    <form id="profileForm" autocomplete="off">
+      <div class="field"><label for="name">First name or nickname</label><input id="name" maxlength="30" required></div>
+      <div class="field"><label for="age">Age</label><input id="age" type="number" min="18" max="45" inputmode="numeric" required></div>
+      <div class="field full"><label for="pCollege">College</label><input id="pCollege" maxlength="80" required placeholder="Same spelling your friends would use"><small>People search by this name, so spell it the way most students at your campus do.</small></div>
+      <div class="field"><label for="pYear">Year</label><select id="pYear" required><option value="">Choose</option><option>1st year</option><option>2nd year</option><option>3rd year</option><option>4th year</option><option>5th year+</option><option>Postgrad</option></select></div>
+      <div class="field"><label for="major">Major or course</label><input id="major" maxlength="50" placeholder="e.g. Mechanical Engineering"></div>
+      <div class="field"><label for="gender">I am</label><select id="gender"><option value="">Prefer not to say</option><option>Woman</option><option>Man</option><option>Non-binary</option></select></div>
+      <div class="field"><label for="looking">Looking for</label><select id="looking"><option>Dating</option><option>Something casual</option><option>Friends first</option><option>Open to anything</option></select></div>
+      <div class="field full"><label for="bio">A line about you</label><textarea id="bio" rows="3" maxlength="240" placeholder="Library cat person. Will argue about the best canteen snack."></textarea></div>
+      <div class="field full"><label for="interests">Interests</label><input id="interests" maxlength="120" placeholder="Up to 6, separated by commas: chess, trekking, lo-fi"></div>
+      <div class="field full"><label for="handle">Instagram or Snapchat handle (optional)</label><input id="handle" maxlength="40" placeholder="@yourhandle"><small>Anyone on Common Room can see this on your card, so leave it blank if you would rather wait for a match.</small></div>
+      <label class="check full" for="adult"><input id="adult" type="checkbox" required><span>I am 18 or older and a current college student. I will only share things I am comfortable with others seeing.</span></label>
+      <div class="actions full">
+        <button class="btn primary" type="submit" id="saveBtn">Save my card</button>
+        <button class="btn ghost" type="button" id="deleteBtn" hidden>Delete my card</button>
+        <span class="status" id="formStatus" role="status" aria-live="polite"></span>
+      </div>
+    </form>
+    <div class="notice"><strong>Meeting people safely.</strong> Meet in public on campus for the first time, tell a friend where you are going, and use the Report button on any card that feels off.</div>
+  </section>
+</div>
+
+<script>
+(function () {
+  var db = null, uid = null, canWrite = true, ready = false;
+  var profiles = new Map(), waves = new Map(), myReports = [];
+  var view = "browse", busyWave = false, confirmDelete = false;
+  var $ = function (id) { return document.getElementById(id); };
+
+  function el(tag, attrs) {
+    var n = document.createElement(tag);
+    if (attrs) for (var k in attrs) {
+      if (attrs[k] == null) continue;
+      if (k === "class") n.className = attrs[k];
+      else if (k === "text") n.textContent = attrs[k];
+      else if (k.slice(0, 2) === "on") n.addEventListener(k.slice(2), attrs[k]);
+      else n.setAttribute(k, attrs[k]);
+    }
+    for (var i = 2; i < arguments.length; i++) {
+      var c = arguments[i];
+      if (c == null || c === false) continue;
+      n.appendChild(typeof c === "string" ? document.createTextNode(c) : c);
+    }
+    return n;
+  }
+  function clear(n) { while (n.firstChild) n.removeChild(n.firstChild); }
+
+  function tokens(s) {
+    return String(s || "").toLowerCase().replace(/&/g, " and ").replace(/[^a-z0-9]+/g, " ").split(" ")
+      .filter(function (t) { return t && t !== "the" && t !== "of" && t !== "at"; });
+  }
+  function collegeKey(s) { return tokens(s).sort().join(" "); }
+  function matchesCollege(q, college) {
+    var qt = tokens(q); if (!qt.length) return false;
+    var ct = tokens(college);
+    return qt.every(function (t) { return ct.some(function (c) { return c.indexOf(t) === 0; }); });
+  }
+
+  /* ---------- storage ---------- */
+  function wavesOf(id) { var w = waves.get(id); return (w && Array.isArray(w.to)) ? w.to : []; }
+  function isMatch(other) { return uid && wavesOf(uid).indexOf(other) > -1 && wavesOf(other).indexOf(uid) > -1; }
+
+  function start() {
+    if (!window.claude || !window.claude.use) { ready = true; render(); return; }
+    Promise.all([window.claude.use("db"), window.claude.use("user")]).then(function (r) {
+      db = r[0]; var user = r[1];
+      if (!db) { ready = true; render(); return; }
+      var idP = user ? user.id() : Promise.resolve(null);
+      var canP = user ? user.can("data.write") : Promise.resolve(null);
+      return Promise.all([idP, canP]).then(function (x) {
+        uid = x[0]; canWrite = x[1] !== false;
+        db.collection("profiles").onSnapshot(function (snap) {
+          profiles = new Map(); snap.docs.forEach(function (d) { if (d.exists) profiles.set(d.id, d.data()); });
+          ready = true; render();
+        }, function () { ready = true; render(); });
+        db.collection("waves").onSnapshot(function (snap) {
+          waves = new Map(); snap.docs.forEach(function (d) { if (d.exists) waves.set(d.id, d.data()); });
+          render();
+        }, function () {});
+        if (uid) db.doc("reports/" + uid).get().then(function (d) {
+          myReports = (d.exists && d.data() && d.data().targets) || []; render();
+        }, function () {});
+      });
+    }).catch(function () { ready = true; render(); });
+  }
+
+  function setWave(target, on) {
+    if (!db || !uid || busyWave) return;
+    busyWave = true;
+    var cur = wavesOf(uid).filter(function (x) { return x !== target; });
+    if (on) cur.push(target);
+    db.doc("waves/" + uid).set({ to: cur }).then(function () { busyWave = false; waves.set(uid, { to: cur }); render(); },
+      function () { busyWave = false; flash("Could not save that wave. Try again in a moment.", true); });
+  }
+  function report(target) {
+    if (!db || !uid || myReports.indexOf(target) > -1) return;
+    var next = myReports.concat([target]);
+    db.doc("reports/" + uid).set({ targets: next }).then(function () { myReports = next; render(); }, function () {});
+  }
+
+  /* ---------- rendering ---------- */
+  function banner() {
+    var b = $("banner"); clear(b);
+    if (!ready) return;
+    if (!db) b.appendChild(el("div", { class: "notice" }, el("strong", { text: "Sign in to join. " }), "Common Room needs a claude.ai sign-in to save cards and show who is on your campus."));
+    else if (!uid || !canWrite) b.appendChild(el("div", { class: "notice" }, el("strong", { text: "You are viewing only. " }), "Ask the person who shared this link for contributor access so you can make a card and wave at people."));
+  }
+
+  function card(p, id) {
+    var mine = id === uid, matched = !mine && isMatch(id), waved = !mine && wavesOf(uid).indexOf(id) > -1;
+    var tags = (p.interests || []).map(function (t) { return el("span", { class: "tag", text: t }); });
+    var meta = [p.age ? p.age + " yrs" : "", p.major || "", p.gender || ""].filter(Boolean).join(" · ");
+    var foot = el("div", { class: "foot" });
+    if (mine) foot.appendChild(el("span", { class: "sub", text: "This is your card" }));
+    else {
+      if (matched) foot.appendChild(el("span", { class: "badge-match", text: "It's a match" }));
+      foot.appendChild(el("button", {
+        class: "btn " + (waved ? "solid" : "primary"), type: "button", disabled: (!uid || !canWrite) ? "" : null,
+        "aria-pressed": waved ? "true" : "false",
+        onclick: function () { setWave(id, !waved); }
+      }, waved ? "Waved" : "Wave"));
+      foot.appendChild(el("span", { class: "grow" }));
+      var rep = myReports.indexOf(id) > -1;
+      foot.appendChild(el("button", { class: "btn ghost", type: "button", disabled: (rep || !uid) ? "" : null, onclick: function () { report(id); } }, rep ? "Reported" : "Report"));
+    }
+    var c = el("article", { class: "id" },
+      el("div", { class: "stripe mono" }, el("span", { text: p.college || "" }), el("i", { class: "hole", "aria-hidden": "true" })),
+      el("div", { class: "body" },
+        el("span", { class: "mono", style: "color:var(--muted)", text: (p.year || "Student") + " · " + (p.looking || "") }),
+        el("h3", { text: p.name || "Someone" }),
+        meta ? el("div", { class: "sub", text: meta }) : null,
+        p.bio ? el("p", { class: "bio", text: p.bio }) : null,
+        tags.length ? el("div", { class: "tags" }, tags) : null,
+        p.handle ? el("div", { class: "handle", text: p.handle }) : null
+      ), foot);
+    return c;
+  }
+
+  function campusChips() {
+    var box = $("campuses"); clear(box);
+    var groups = {};
+    profiles.forEach(function (p) {
+      var k = collegeKey(p.college); if (!k) return;
+      var g = groups[k] || (groups[k] = { n: 0, names: {} });
+      g.n++; g.names[p.college] = (g.names[p.college] || 0) + 1;
+    });
+    Object.keys(groups).sort(function (a, b) { return groups[b].n - groups[a].n; }).slice(0, 12).forEach(function (k) {
+      var g = groups[k];
+      var name = Object.keys(g.names).sort(function (a, b) { return g.names[b] - g.names[a]; })[0];
+      box.appendChild(el("button", { class: "chip", type: "button", onclick: function () { $("college").value = name; renderResults(); } }, name, el("b", { text: String(g.n) })));
+    });
+  }
+
+  function goCreate() { setView("me"); }
+
+  function renderResults() {
+    var box = $("results"); clear(box);
+    var q = $("college").value.trim(), fy = $("fYear").value, fg = $("fGender").value;
+    var genderMap = { Women: "Woman", Men: "Man", "Non-binary": "Non-binary" };
+    if (!ready) { box.appendChild(el("div", { class: "notice", text: "Loading your campus…" })); return; }
+    if (!q) {
+      if (!profiles.size) box.appendChild(el("div", { class: "empty" }, el("h3", { text: "No one is here yet" }), el("p", { text: "Make the first card for your college, then share this page with friends. Cards from the same college show up together." }), el("button", { class: "btn primary", type: "button", onclick: goCreate }, "Make my card")));
+      else box.appendChild(el("p", { class: "sub", style: "color:var(--muted);margin:0", text: "Type your college above, or pick a campus." }));
+      return;
+    }
+    var list = [];
+    profiles.forEach(function (p, id) {
+      if (id === uid) return;
+      if (!matchesCollege(q, p.college)) return;
+      if (fy && p.year !== fy) return;
+      if (fg && p.gender !== genderMap[fg]) return;
+      list.push([id, p]);
+    });
+    list.sort(function (a, b) { return (b[1].createdAt || 0) - (a[1].createdAt || 0); });
+    if (!list.length) {
+      box.appendChild(el("div", { class: "empty" }, el("h3", { text: "No cards for “" + q + "” yet" }),
+        el("p", { text: "Try fewer words, or make your own card so people from " + q + " can find you." }),
+        profiles.has(uid) ? null : el("button", { class: "btn primary", type: "button", onclick: goCreate }, "Make my card")));
+      return;
+    }
+    box.appendChild(el("p", { class: "mono", style: "color:var(--muted);margin:0 0 12px", text: list.length + (list.length === 1 ? " person" : " people") + " from " + q }));
+    var g = el("div", { class: "grid" });
+    list.forEach(function (x) { g.appendChild(card(x[1], x[0])); });
+    box.appendChild(g);
+  }
+
+  function renderMatches() {
+    var box = $("matches"); clear(box);
+    var list = [];
+    if (uid) profiles.forEach(function (p, id) { if (id !== uid && isMatch(id)) list.push([id, p]); });
+    $("matchCount").textContent = list.length ? String(list.length) : "";
+    if (!list.length) {
+      box.appendChild(el("div", { class: "empty" }, el("h3", { text: "No matches yet" }), el("p", { text: "When you wave at someone and they wave back, they appear here." }),
+        el("button", { class: "btn primary", type: "button", onclick: function () { setView("browse"); } }, "Find people")));
+      return;
+    }
+    var g = el("div", { class: "grid" });
+    list.forEach(function (x) { g.appendChild(card(x[1], x[0])); });
+    box.appendChild(g);
+  }
+
+  var formFilled = false;
+  function renderMe() {
+    var p = uid && profiles.get(uid);
+    $("meTitle").textContent = p ? "Your card" : "Make your card";
+    $("deleteBtn").hidden = !p;
+    $("saveBtn").disabled = !db || !uid || !canWrite;
+    if (p && !formFilled) {
+      formFilled = true;
+      $("name").value = p.name || ""; $("age").value = p.age || ""; $("pCollege").value = p.college || "";
+      $("pYear").value = p.year || ""; $("major").value = p.major || ""; $("gender").value = p.gender || "";
+      $("looking").value = p.looking || "Dating"; $("bio").value = p.bio || "";
+      $("interests").value = (p.interests || []).join(", "); $("handle").value = p.handle || ""; $("adult").checked = true;
+    }
+    if (!p && !formFilled && $("college").value && !$("pCollege").value) $("pCollege").value = $("college").value;
+  }
+
+  function flash(msg, isErr) { var s = $("formStatus"); s.textContent = msg; s.className = "status" + (isErr ? " err" : ""); }
+
+  function render() { banner(); campusChips(); renderResults(); renderMatches(); renderMe(); }
+
+  function setView(v) {
+    view = v;
+    ["browse", "matches", "me"].forEach(function (n) {
+      $("view-" + n).hidden = n !== v;
+      $("tab-" + n).setAttribute("aria-selected", n === v ? "true" : "false");
+    });
+    if (v === "me") renderMe();
+    window.scrollTo(0, 0);
+  }
+
+  /* ---------- events ---------- */
+  document.querySelectorAll("nav button").forEach(function (b) { b.addEventListener("click", function () { setView(b.getAttribute("data-view")); }); });
+  ["college", "fYear", "fGender"].forEach(function (id) { $(id).addEventListener("input", renderResults); });
+
+  $("profileForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    if (!db || !uid) { flash("Sign in to claude.ai to save your card.", true); return; }
+    var age = parseInt($("age").value, 10);
+    if (!(age >= 18)) { flash("Common Room is for people 18 and older.", true); return; }
+    if (!$("adult").checked) { flash("Please confirm you are 18+ and a college student.", true); return; }
+    var interests = $("interests").value.split(",").map(function (s) { return s.trim(); }).filter(Boolean).slice(0, 6);
+    var prev = profiles.get(uid);
+    var data = {
+      name: $("name").value.trim(), age: age, college: $("pCollege").value.trim().replace(/\s+/g, " "), year: $("pYear").value,
+      major: $("major").value.trim(), gender: $("gender").value, looking: $("looking").value, bio: $("bio").value.trim(),
+      interests: interests, handle: $("handle").value.trim(), createdAt: (prev && prev.createdAt) || Date.now()
+    };
+    $("saveBtn").disabled = true; flash("Saving…", false);
+    db.doc("profiles/" + uid).set(data).then(function () {
+      profiles.set(uid, data); flash("Saved. People from " + data.college + " can see your card.", false);
+      $("saveBtn").disabled = false; $("college").value = data.college; render();
+    }, function () { $("saveBtn").disabled = false; flash("Could not save. Check that you have contributor access, then try again.", true); });
+  });
+
+  $("deleteBtn").addEventListener("click", function () {
+    if (!confirmDelete) { confirmDelete = true; $("deleteBtn").textContent = "Tap again to delete for good"; return; }
+    confirmDelete = false; $("deleteBtn").textContent = "Delete my card";
+    Promise.all([db.doc("profiles/" + uid).delete(), db.doc("waves/" + uid).delete()]).then(function () {
+      profiles.delete(uid); waves.delete(uid); formFilled = false;
+      document.getElementById("profileForm").reset(); flash("Your card is deleted.", false); render();
+    }, function () { flash("Could not delete. Try again.", true); });
+  });
+
+  render();
+  start();
+})();
+</script>
+
+</body></html>
